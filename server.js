@@ -15,7 +15,13 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // MongoDB Connection
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
+  .then(async () => {
+    console.log('✅ Connected to MongoDB');
+    // Drop any old indexes (like firebaseUid) that are no longer in the schema
+    const User = require('./models/User');
+    await User.syncIndexes();
+    console.log('✅ MongoDB indexes synced');
+  })
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // API Routes
